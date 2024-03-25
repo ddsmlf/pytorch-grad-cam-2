@@ -18,10 +18,15 @@ class ActivationsAndGradients:
 
     def save_activation(self, module, input, output):
         activation = output
-
+    
         if self.reshape_transform is not None:
             activation = self.reshape_transform(activation)
-        self.activations.append(tuple(a.cpu().detach() for a in activation))
+    
+        if isinstance(activation, tuple):
+            self.activations.append(tuple(a.cpu().detach() for a in activation))
+        else:
+            self.activations.append(activation.cpu().detach())
+
 
     def save_gradient(self, module, input, output):
         if not hasattr(output, "requires_grad") or not output.requires_grad:
